@@ -1,20 +1,15 @@
-import java.io.File;
-import java.util.Collections;
-import java.util.Set;
-
-import javax.servlet.Registration;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
-
+import com.simpleinstagram.web.ApplicationContext;
+import com.simpleinstagram.web.DispatcherServlet;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 
-import com.simpleinstagram.web.ApplicationContext;
-import com.simpleinstagram.web.DispatcherServlet;
+import javax.servlet.Registration;
+import javax.servlet.ServletRegistration;
+import java.io.File;
+import java.util.Collections;
 
 public class App {
     public static void main(String[] args) throws LifecycleException {

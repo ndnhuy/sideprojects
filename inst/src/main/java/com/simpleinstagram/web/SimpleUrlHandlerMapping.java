@@ -4,9 +4,16 @@ import java.io.Writer;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.simpleinstagram.photo.PhotoUpload;
+import com.simpleinstagram.photo.PhotoUploadController;
+import jdk.internal.org.objectweb.asm.commons.SimpleRemapper;
 
 public class SimpleUrlHandlerMapping implements HandlerMapping {
+
+    private BeanFactory beanFactory;
+
+    public SimpleUrlHandlerMapping(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
 
     @Override
     public RequestHandler getHandler(HttpServletRequest request) {
@@ -18,10 +25,10 @@ public class SimpleUrlHandlerMapping implements HandlerMapping {
             };
         }
         if ("/photo".equalsIgnoreCase(request.getRequestURI()) && "GET".equalsIgnoreCase(request.getMethod())) {
-            return new PhotoUpload()::doGet;
+            return beanFactory.getBean("photoUploadController", ControllerAdapter.class)::doGet;
         }
         if ("/photo".equalsIgnoreCase(request.getRequestURI()) && "POST".equalsIgnoreCase(request.getMethod())) {
-            return new PhotoUpload()::doPost;
+            return beanFactory.getBean("photoUploadController", ControllerAdapter.class)::doPost;
         }
         return (req, resp) -> {};
     }

@@ -1,10 +1,8 @@
 package com.simpleinstagram.web;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class ControllerAdapter implements Controller {
     @Override
@@ -13,7 +11,7 @@ public class ControllerAdapter implements Controller {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Request method POST not supported");
     }
 }
