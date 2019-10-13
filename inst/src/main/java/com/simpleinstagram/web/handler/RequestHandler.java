@@ -1,4 +1,4 @@
-package com.simpleinstagram.web;
+package com.simpleinstagram.web.handler;
 
 import java.io.IOException;
 

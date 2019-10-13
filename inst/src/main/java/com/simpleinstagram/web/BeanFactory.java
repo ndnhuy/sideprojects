@@ -1,5 +1,8 @@
 package com.simpleinstagram.web;
 
+import java.util.List;
+
 public interface BeanFactory {
-    public <T> T getBean(String beanName, Class<T> requiredType);
+    <T> T getBean(String beanName, Class<T> requiredType);
+    List<String> getAllBeanNames();
 }

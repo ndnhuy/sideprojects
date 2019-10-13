@@ -1,7 +1,6 @@
 package com.simpleinstagram.photo;
 
 import com.simpleinstagram.jdbc.JdbcTemplate;
-import com.simpleinstagram.jdbc.PreparedStatementCreator;
 
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
@@ -9,10 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +30,7 @@ public class PhotoDAO {
 
     public List<Long> loadAllPhotoIds() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        return jdbcTemplate.execute(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
-                return conn.prepareStatement("select id from photo;");
-            }
-        }, ps -> {
+        return jdbcTemplate.execute(conn -> conn.prepareStatement("select id from photo;"), ps -> {
             List<Long> ids = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

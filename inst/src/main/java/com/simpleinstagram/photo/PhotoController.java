@@ -1,6 +1,9 @@
 package com.simpleinstagram.photo;
 
 import com.simpleinstagram.web.ControllerAdapter;
+import com.simpleinstagram.web.handler.Controller;
+import com.simpleinstagram.web.handler.RequestMapping;
+import com.simpleinstagram.web.handler.RequestMethod;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -8,14 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-public class PhotoUploadController extends ControllerAdapter {
+@Controller
+public class PhotoController extends ControllerAdapter {
 
     private PhotoService photoService;
 
-    public PhotoUploadController(PhotoService photoService) {
+    public PhotoController(PhotoService photoService) {
         this.photoService = photoService;
     }
 
+    @RequestMapping(path = "/photo", requestMethod = RequestMethod.GET)
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 //        response.getOutputStream().write(photoService.loadPhotos());

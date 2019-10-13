@@ -1,12 +1,16 @@
-package com.simpleinstagram.web;
+package com.simpleinstagram.web.handler;
 
 import java.io.Writer;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.simpleinstagram.photo.PhotoUploadController;
-import jdk.internal.org.objectweb.asm.commons.SimpleRemapper;
+import com.simpleinstagram.web.BeanFactory;
+import com.simpleinstagram.web.ControllerAdapter;
 
+/**
+ *  Return corresponding handler for a specific url
+ */
 public class SimpleUrlHandlerMapping implements HandlerMapping {
 
     private BeanFactory beanFactory;
@@ -16,7 +20,7 @@ public class SimpleUrlHandlerMapping implements HandlerMapping {
     }
 
     @Override
-    public RequestHandler getHandler(HttpServletRequest request) {
+    public RequestHandler getHandler(HttpServletRequest request, HttpServletResponse response) {
         if ("/hello".equalsIgnoreCase(request.getRequestURI())) {
             return (req, resp) -> {
                 Writer writer = resp.getWriter();

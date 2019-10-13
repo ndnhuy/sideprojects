@@ -1,34 +1,35 @@
 package com.simpleinstagram.web;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import com.simpleinstagram.exception.BeanDuplicateException;
 import com.simpleinstagram.exception.BeanNotFoundException;
 import com.simpleinstagram.photo.PhotoDAO;
 import com.simpleinstagram.photo.PhotoService;
-import com.simpleinstagram.photo.PhotoUploadController;
+import com.simpleinstagram.photo.PhotoController;
+import com.simpleinstagram.web.handler.HandlerMapping;
+import com.simpleinstagram.web.handler.HandlerMethodMapping;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class ApplicationContext implements BeanFactory {
 
-    private static Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
+    private Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
+    private List<String> beanNames = new ArrayList<>();
 
     public ApplicationContext() {
         init();
     }
 
     public void init() {
-        registerBean("handlerMapping", HandlerMapping.class, new SimpleUrlHandlerMapping(this));
+        registerBean("handlerMapping", HandlerMapping.class, new HandlerMethodMapping(this));
         registerBean("dataSource", DataSource.class, mysqlDataSource());
         registerBean("photoService", PhotoService.class, new PhotoService(new PhotoDAO(this.getBean("dataSource"))));
         registerBean("photoUploadController",
                 ControllerAdapter.class,
-                new PhotoUploadController(this.getBean("photoService", PhotoService.class)));
+                new PhotoController(this.getBean("photoService", PhotoService.class)));
+        beanDefinitionMap.values().stream().map(def -> def.instance).filter(o -> o instanceof InitializingBean)
+            .forEach(o -> ((InitializingBean) o).afterInitialize());
     }
 
     private MysqlDataSource mysqlDataSource() {
@@ -39,8 +40,12 @@ public class ApplicationContext implements BeanFactory {
         return mysqlDataSource;
     }
 
-    private static <T> void registerBean(String beanName, Class<T> clazz, T instance) {
+    private <T> void registerBean(String beanName, Class<T> clazz, T instance) {
+        if (beanDefinitionMap.containsKey(beanName)) {
+            throw new BeanDuplicateException("Duplicate bean while registering");
+        }
         beanDefinitionMap.put(beanName, new BeanDefinition(beanName, clazz, instance));
+        beanNames.add(beanName);
     }
 
     public <T> T getBean(String beanName) {
@@ -53,10 +58,15 @@ public class ApplicationContext implements BeanFactory {
 
     public <T> T getBean(String beanName, Class<T> requiredType) {
         BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-        if (beanDefinition == null || !beanDefinition.classType.isAssignableFrom(requiredType)) {
+        if (beanDefinition == null || !requiredType.isAssignableFrom(beanDefinition.classType)) {
             throw new BeanNotFoundException(String.format("Bean %s not found for required type %s", beanName, requiredType));
         }
         return (T) beanDefinition.instance;
+    }
+
+    @Override
+    public List<String> getAllBeanNames() {
+        return Collections.unmodifiableList(this.beanNames);
     }
 
     private static class BeanDefinition<T> {
